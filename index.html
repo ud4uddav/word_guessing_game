@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Word Guessing Game</title>
+    <style>
+      body { background: #f4f7fb; color: #1f2937; font-family: Arial, sans-serif; margin: 0; }
+      main { background: white; border-radius: 12px; box-shadow: 0 8px 24px #cbd5e1; margin: 64px auto; max-width: 460px; padding: 32px; text-align: center; }
+      input, button { border: 1px solid #94a3b8; border-radius: 6px; font-size: 1rem; padding: 10px; }
+      button { background: #2563eb; border-color: #2563eb; color: white; cursor: pointer; }
+      #message { min-height: 24px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Word Guessing Game</h1>
+      <p>Guess the secret five-letter word. You have 6 guesses.</p>
+      <input id="guess" aria-label="Your guess" maxlength="5" placeholder="Type a word">
+      <button id="submit">Guess</button>
+      <p id="message" aria-live="polite"></p>
+      <p id="guesses-left">Guesses left: 6</p>
+      <button id="restart" hidden>Play again</button>
+    </main>
+
+    <script>
+      // The same set of words used in the Python game.
+      const words = ["python", "apple", "tiger", "ocean", "music"];
+      let secretWord;
+      let guessesLeft;
+
+      // Start a new game and choose a random word.
+      function startGame() {
+        secretWord = words[Math.floor(Math.random() * words.length)];
+        guessesLeft = 6;
+        document.getElementById("guess").value = "";
+        document.getElementById("guess").disabled = false;
+        document.getElementById("submit").disabled = false;
+        document.getElementById("message").textContent = "";
+        document.getElementById("guesses-left").textContent = "Guesses left: 6";
+        document.getElementById("restart").hidden = true;
+      }
+
+      // Check the word typed by the player.
+      function checkGuess() {
+        const input = document.getElementById("guess");
+        const guess = input.value.toLowerCase().trim();
+        const message = document.getElementById("message");
+
+        if (!/^[a-z]+$/.test(guess)) {
+          message.textContent = "Please enter a word using letters only.";
+          return;
+        }
+
+        if (guess === secretWord) {
+          message.textContent = `You won! The word was ${secretWord}.`;
+          endGame();
+          return;
+        }
+
+        guessesLeft -= 1;
+        document.getElementById("guesses-left").textContent = `Guesses left: ${guessesLeft}`;
+        input.value = "";
+
+        if (guessesLeft === 0) {
+          message.textContent = `Game over! The word was ${secretWord}.`;
+          endGame();
+        } else {
+          message.textContent = "Not quite. Try again!";
+        }
+      }
+
+      // Disable guessing when a game ends and show the restart button.
+      function endGame() {
+        document.getElementById("guess").disabled = true;
+        document.getElementById("submit").disabled = true;
+        document.getElementById("restart").hidden = false;
+      }
+
+      document.getElementById("submit").addEventListener("click", checkGuess);
+      document.getElementById("restart").addEventListener("click", startGame);
+      startGame();
+    </script>
+  </body>
+</html>
